@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Data Exploration - Customer Churn Analytics{% endblock %}
+
+{% block content %}
+<div class="exploration-container">
+    <div class="page-header">
+        <h1>📊 Data Exploration</h1>
+        <p>Discover patterns and insights in customer behavior data</p>
+    </div>
+
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h2>Churn Distribution</h2>
+            <canvas id="churnDistChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h2>Churn by Tenure Group</h2>
+            <canvas id="tenureChurnChart"></canvas>
+        </div>
+
+        <div class="chart-card large-chart">
+            <h2>Monthly Charges Distribution</h2>
+            <canvas id="chargesDistChart"></canvas>
+        </div>
+
+        <div class="chart-card large-chart">
+            <h2>Service Usage Impact on Churn</h2>
+            <canvas id="serviceImpactChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<style>
+.large-chart {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .large-chart {
+        grid-column: span 1;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Fetch exploration data
+    fetch('/api/exploration_data')
+        .then(response => response.json())
+        .then(data => {
+            // Churn Distribution Pie Chart
+            const churnCtx = document.getElementById('churnDistChart').getContext('2d');
+            new Chart(churnCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.churn_distribution),
+                    datasets: [{
+                        data: Object.values(data.churn_distribution),
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Tenure Churn Bar Chart
+            const tenureCtx = document.getElementById('tenureChurnChart').getContext('2d');
+            new Chart(tenureCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.tenure_churn),
+                    datasets: [{
+                        label: 'Churn Rate (%)',
+                        data: Object.values(data.tenure_churn),
+                        backgroundColor: 'rgba(99, 102, 241, 0.6)',
+                        borderColor: 'rgba(99, 102, 241, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Churn Rate (%)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tenure (months)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Monthly Charges Distribution
+            const chargesCtx = document.getElementById('chargesDistChart').getContext('2d');
+            new Chart(chargesCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Churned',
+                        data: data.charges_data.churned.map((val, idx) => ({x: idx, y: val})),
+                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                        pointRadius: 3
+                    }, {
+                        label: 'Retained',
+                        data: data.charges_data.retained.slice(0, 1000).map((val, idx) => ({x: idx, y: val})),
+                        backgroundColor: 'rgba(16, 185, 129, 0.5)',
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Monthly Charges ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Customer Index'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Service Impact Chart
+            const serviceCtx = document.getElementById('serviceImpactChart').getContext('2d');
+            const services = Object.keys(data.service_impact);
+            const withService = services.map(s => data.service_impact[s].with_service);
+            const withoutService = services.map(s => data.service_impact[s].without_service);
+
+            new Chart(serviceCtx, {
+                type: 'bar',
+                data: {
+                    labels: services,
+                    datasets: [{
+                        label: 'With Service',
+                        data: withService,
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 2
+                    }, {
+                        label: 'Without Service',
+                        data: withoutService,
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Churn Rate (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+</script>
+{% endblock %}

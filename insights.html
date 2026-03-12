@@ -1,0 +1,207 @@
+<!-- ========================================== -->
+<!-- templates/insights.html -->
+<!-- ========================================== -->
+{% extends "base.html" %}
+
+{% block title %}Insights - Customer Churn Analytics{% endblock %}
+
+{% block content %}
+<div class="insights-container">
+    <div class="page-header">
+        <h1>💡 Key Insights & Feature Importance</h1>
+        <p>Data-driven insights to guide retention strategies</p>
+    </div>
+
+    <div class="feature-importance-section">
+        <h2>Top 10 Factors Influencing Churn</h2>
+        <div class="features-list">
+            {% for feature, importance in top_features %}
+            <div class="feature-item">
+                <div class="feature-header">
+                    <span class="feature-name">{{ feature }}</span>
+                    <span class="feature-percentage">{{ importance }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ importance }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="insights-cards">
+        <h2>Strategic Insights</h2>
+        <div class="insights-grid">
+            {% for insight in insights %}
+            <div class="insight-detail-card {{ insight.impact.lower() }}">
+                <div class="insight-header">
+                    <h3>{{ insight.title }}</h3>
+                    <span class="impact-badge">{{ insight.impact }} Impact</span>
+                </div>
+                <p>{{ insight.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="recommendations-section">
+        <h2>📋 Recommended Actions</h2>
+        <div class="recommendations-list">
+            <div class="recommendation-item">
+                <div class="rec-number">1</div>
+                <div class="rec-content">
+                    <h3>Implement Contract Incentive Program</h3>
+                    <p>Offer 15-20% discount for customers switching from month-to-month to annual contracts. Focus on customers with 6-12 months tenure.</p>
+                </div>
+            </div>
+            <div class="recommendation-item">
+                <div class="rec-number">2</div>
+                <div class="rec-content">
+                    <h3>Enhanced Onboarding for New Customers</h3>
+                    <p>Implement 90-day onboarding program with check-ins at 30, 60, and 90 days to increase early retention.</p>
+                </div>
+            </div>
+            <div class="recommendation-item">
+                <div class="rec-number">3</div>
+                <div class="rec-content">
+                    <h3>Tech Support Bundle Promotion</h3>
+                    <p>Offer free 3-month tech support trial to customers without support services, particularly those with high monthly charges.</p>
+                </div>
+            </div>
+            <div class="recommendation-item">
+                <div class="rec-number">4</div>
+                <div class="rec-content">
+                    <h3>Payment Method Migration Campaign</h3>
+                    <p>Incentivize electronic check users to switch to automatic payment methods with 5% discount or loyalty points.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.feature-importance-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.features-list {
+    margin-top: 1.5rem;
+}
+
+.feature-item {
+    margin-bottom: 1.5rem;
+}
+
+.feature-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.feature-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.feature-percentage {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.progress-bar {
+    height: 12px;
+    background: var(--bg-secondary);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 6px;
+    transition: width 0.5s ease;
+}
+
+.insights-cards {
+    margin-bottom: 2rem;
+}
+
+.insight-detail-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+.insight-detail-card.high {
+    border-left-color: var(--danger-color);
+}
+
+.insight-detail-card.medium {
+    border-left-color: var(--warning-color);
+}
+
+.insight-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.impact-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: var(--bg-secondary);
+}
+
+.recommendations-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    box-shadow: var(--shadow);
+}
+
+.recommendations-list {
+    margin-top: 1.5rem;
+}
+
+.recommendation-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.rec-number {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.rec-content h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+</style>
+{% endblock %}

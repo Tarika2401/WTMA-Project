@@ -1,0 +1,116 @@
+<!-- ========================================== -->
+<!-- templates/risk_analysis.html -->
+<!-- ========================================== -->
+{% extends "base.html" %}
+
+{% block title %}Risk Analysis - Customer Churn Analytics{% endblock %}
+
+{% block content %}
+<div class="risk-analysis-container">
+    <div class="page-header">
+        <h1>⚠️ High-Risk Customer Analysis</h1>
+        <p>Customers with high churn probability requiring immediate attention</p>
+    </div>
+
+    <div class="risk-summary">
+        <div class="metric-card danger">
+            <div class="metric-icon">🚨</div>
+            <div class="metric-content">
+                <h3>High-Risk Customers</h3>
+                <p class="metric-value">{{ total_at_risk }}</p>
+                <span class="metric-label">Churn probability > 60%</span>
+            </div>
+        </div>
+
+        <div class="metric-card danger">
+            <div class="metric-icon">💸</div>
+            <div class="metric-content">
+                <h3>Annual Revenue at Risk</h3>
+                <p class="metric-value">${{ "{:,.2f}".format(revenue_at_risk) }}</p>
+                <span class="metric-label">Potential loss if no action taken</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="data-table">
+        <h2>Top 50 High-Risk Customers</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Tenure (months)</th>
+                    <th>Monthly Charges</th>
+                    <th>Contract</th>
+                    <th>Churn Probability</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in high_risk_customers %}
+                <tr>
+                    <td>{{ customer.customerID }}</td>
+                    <td>{{ customer.tenure }}</td>
+                    <td>${{ "%.2f"|format(customer.MonthlyCharges) }}</td>
+                    <td>{{ customer.Contract }}</td>
+                    <td>
+                        <span class="risk-badge high">{{ "%.1f"|format(customer.ChurnProbability) }}%</span>
+                    </td>
+                    <td>
+                        <button class="btn-action">Contact</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.risk-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.data-table {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+}
+
+.data-table h2 {
+    margin-bottom: 1rem;
+}
+
+.risk-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.risk-badge.high {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger-color);
+}
+
+.btn-action {
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.btn-action:hover {
+    background: var(--secondary-color);
+}
+</style>
+{% endblock %}
